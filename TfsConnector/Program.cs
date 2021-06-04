@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -20,11 +20,17 @@ namespace BasicSccExample
             var changesSetsInput = Console.ReadLine();
             var list = changesSetsInput.Split(',').Select(_ => int.Parse(_.Trim())).OrderByDescending(_ => _).ToArray();
             var result = ListFilesFromChangeSets(list);
+
+            Console.WriteLine("Starting.");
             GetCurrentChangeSet("OutSource/Accenture", result);
             GetCurrentChangeSet("HML", result);
             GetCurrentChangeSet("DEV", result);
+            Console.WriteLine("Finishing.");
             var folder = GetFolder();
-            Console.WriteLine($"Created File:  {CreateFile(result.Where(_ => _.ObjectName != "").ToList(), folder, "merge")}");
+            var file = CreateFile(result.Where(_ => _.ObjectName != "").ToList(), folder, "merge");
+            Console.WriteLine($"Created File:  {file}");
+            System.Diagnostics.Process.Start($@"{folder}\{file}");
+
             Console.ReadLine();
         }
 
