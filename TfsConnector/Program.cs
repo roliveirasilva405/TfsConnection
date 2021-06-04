@@ -47,7 +47,7 @@ namespace BasicSccExample
         public static List<MergeSheet> ListFilesFromChangeSets(int[] codes)
         {
             var result = new List<MergeSheet>();
-            Uri serverUri = new Uri("http://tfs.fleury.com.br:8080/tfs/GrupoFleury");
+            Uri serverUri = new Uri(TfsUser.TfsUrl);
             NetworkCredential cred = new NetworkCredential(TfsUser.UserName, TfsUser.UserPassword, TfsUser.Domain);
             TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(serverUri, cred);
             tpc.EnsureAuthenticated();
@@ -68,7 +68,7 @@ namespace BasicSccExample
 
         public static void GetCurrentChangeSet(string ENV, List<MergeSheet> result)
         {
-            Uri serverUri = new Uri("http://tfs.fleury.com.br:8080/tfs/GrupoFleury");
+            Uri serverUri = new Uri(TfsUser.TfsUrl);
             NetworkCredential cred = new NetworkCredential(TfsUser.UserName, TfsUser.UserPassword, TfsUser.Domain);
             TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(serverUri, cred);
             tpc.EnsureAuthenticated();
