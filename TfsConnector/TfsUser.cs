@@ -14,5 +14,7 @@ namespace TfsConnector
         public static string UserPassword = ConfigurationManager.AppSettings["Password"];
 
         public static string Domain = ConfigurationManager.AppSettings["Domain"];
+        
+        public static string TfsUrl = ConfigurationManager.AppSettings["TfsUrl"];
     }
 }
