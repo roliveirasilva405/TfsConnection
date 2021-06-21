@@ -3,3 +3,10 @@
 ################################################################################
 
 /packages
+/TfsConnector/bin/Debug
+/TfsConnector/obj/Debug
+/TfsConnector/obj/Release
+/TfsConnector/.vs
+/.vs/TfsConnector/v16
+/.vs/TfsConnection/v16
+/.vs
