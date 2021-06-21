@@ -11,10 +11,14 @@ namespace TfsConnector
         public string PathTfs { get; set; }
         public string PathTfsFull { get; set; }
         public string ObjectName { get; set; }
-        public string OutSourceBranchChangeSet { get; set; }
+        public string OutSourceBranchOldChangeSet { get; set; }
+        public string OutSourceBranchOldHash { get; set; }
         public string DevBranchChangeSet { get; set; }
+        public string DevBranchHash { get; set; }
         public string HMLBranchChangeSet { get; set; }
+        public string HMLBranchHash { get; set; }
         public string TargetChangeSet { get; set; }
+        public string TargetHash { get; set; }
 
     }
 
