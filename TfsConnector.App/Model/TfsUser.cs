@@ -2,14 +2,14 @@
 
 namespace TfsConnector.App.Model
 {
-    public static class TfsUser
+    public class TfsUser
     {
-        public static string UserName = ConfigurationManager.AppSettings["User"];
+        public string UserName { get; set; }    //ConfigurationManager.AppSettings["User"];
+                                         
+        public string UserPassword { get; set; } //ConfigurationManager.AppSettings["Password"];
 
-        public static string UserPassword = ConfigurationManager.AppSettings["Password"];
+        public string Domain { get; set; }       //ConfigurationManager.AppSettings["Domain"];
 
-        public static string Domain = ConfigurationManager.AppSettings["Domain"];
-        
-        public static string TfsUrl = ConfigurationManager.AppSettings["TfsUrl"];
+        public string TfsUrl { get; set; }       //ConfigurationManager.AppSettings["TfsUrl"];
     }
 }

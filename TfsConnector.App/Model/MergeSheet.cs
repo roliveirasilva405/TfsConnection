@@ -37,6 +37,7 @@ namespace TfsConnector.App.Model
         public string PRDBranchHash { get; set; }
         public string TargetChangeSet { get; set; }
         public string TargetHash { get; set; }
+        public string ObjectExtension { get; set; }
 
     }
 

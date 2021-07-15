@@ -18,13 +18,21 @@ namespace TfsConnector.App.Extensions
 
         public static string ToPathTfsFull(this MergeBase mergeBase, string currentFile, string environmentDestiny)
         {
+            var pathReturn = "";
             if (mergeBase.SourceControlEnvironment.Equals(SourceControlEnvironment.Homolog))
-                return currentFile.Replace("HML", environmentDestiny);
+            {
+                pathReturn = currentFile.Replace("HML", environmentDestiny);
+                return pathReturn;
+            }
 
             if (mergeBase.SourceControlEnvironment.Equals(SourceControlEnvironment.Accenture))
-                return currentFile.Replace("OutSource/Accenture", environmentDestiny);
+            {
+                pathReturn = currentFile.Replace("Outsource/Accenture", environmentDestiny);
+                return pathReturn;
+            }
 
-            return currentFile.Replace("EsteiraAgil/", "").Replace("/Fontes/", "/" + environmentDestiny + "/Fontes/");
+            pathReturn = currentFile.Replace("EsteiraAgil/", "").Replace("/Fontes/", "/" + environmentDestiny + "/Fontes/");
+            return pathReturn;
         }
 
         public static List<MergeSheet> MergeSheetsFilter(this MergeBase mergeBase)
