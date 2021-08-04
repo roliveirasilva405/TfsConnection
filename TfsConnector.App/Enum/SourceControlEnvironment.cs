@@ -14,4 +14,22 @@ namespace TfsConnector.App.Enum
         Dev,
         Prd
     }
+
+    public enum TipoPlanilha
+    {
+        Merge,
+        Rdm
+    }
+
+    public enum TipoBranch
+    {
+        HML,
+        PRD
+    }
+
+    public enum ChangeSetType
+    {
+        Current,
+        Rollback
+    }
 }

@@ -11,68 +11,155 @@ using System.Net;
 using TfsConnector.App.Enum;
 using TfsConnector.App.Extensions;
 using TfsConnector.App.Model;
+using System.Configuration;
 
 namespace TfsConnector.App.Service
 {
     public class TfsServiceConnection
     {
+        public static string Caminho;
         public VersionControlServer vcs;
+        private TipoBranch _tipoBranch;
+        private TipoPlanilha _tipoPlanilha;
+        private readonly string[] _BdExtensions = new[] { ".sql" };
+        private readonly string[] _ComponentsExtensions = new[] { ".dll" };
+        private readonly string[] _PagesExtensions = new[] { ".asp", ".html", ".css", ".js", ".config" };
+        private readonly string[] _IotaExtensions = new[] { ".exe" };
+        private const int START_LINE = 8;
+        private TfsUser _tfsUser = null;
 
-        public void Run()
+        public RetornoVM Run(int tipoPlanilha, int tipoBranch, string changesets, TfsUser tfsUser = null)
         {
-            Console.WriteLine("Starting TFS Connection...");
-            if (!StartTfsConnection())
+            try
             {
-                Console.WriteLine("Prescione qualquer tecla para sair...");
-                Console.ReadLine();
-                Environment.Exit(0);
+                if (tfsUser == null)
+                {
+                    GetTfsUserByConfiguration();
+                }
+                else
+                {
+                    _tfsUser = tfsUser;
+                }
+
+                _tipoBranch = (TipoBranch)tipoBranch;
+                _tipoPlanilha = (TipoPlanilha)tipoPlanilha;
+
+                if (_tipoPlanilha == TipoPlanilha.Rdm)
+                {
+                    FileInfo file1 = new FileInfo(@"model.xlsx");
+                    if (!file1.Exists)
+                        throw new Exception("Planilha modelo não encontrada!");
+                }
+
+                Console.WriteLine("Starting TFS Connection...");
+
+                if (!StartTfsConnection())
+                {
+                    Console.WriteLine("Pressione qualquer tecla para sair...");
+                    return new RetornoVM() { Retorno = false, CodErro = "TFS001" };
+                    //Environment.Exit(0);
+                }
+
+                var list = changesets.Split(',').Select(_ => int.Parse(_.Trim())).OrderByDescending(_ => _).ToArray();
+                var result = new MergeBase() { MergeSheetList = ListFilesFromChangeSets(list) };
+
+                if (!result.MergeSheetList.Any())
+                {
+                    Console.WriteLine("Nenhum arquivo encontrado para os changeSets indicados");
+                    return new RetornoVM() { Retorno = false, CodErro = "CD001 - Nenhum arquivo encontrado para os changeSets indicados" };
+                }
+
+                Console.WriteLine("Starting.");
+                var folder = !string.IsNullOrEmpty(Caminho) ? Caminho : GetFolder();
+
+                GetChangeSets(result);
+                Console.WriteLine("Finishing.");
+
+                if (_tipoPlanilha == TipoPlanilha.Merge)
+                {
+                    var file = CreateFile(result, folder, "MergeFolder");
+                    Console.WriteLine($"Created File:  {file}");
+                    // System.Diagnostics.Process.Start($@"{folder}\{file}");
+
+                    return new RetornoVM() { Retorno = true, CodErro = "", CreatedFiles = new[] { file } };
+                }
+                else if (_tipoPlanilha == TipoPlanilha.Rdm)
+                {
+                    var arquivoImplantacao = CreateFileRdm(result, folder, GetFileName(ChangeSetType.Current), ChangeSetType.Current);
+                    var arquivoRollback = CreateFileRdm(result, folder, GetFileName(ChangeSetType.Rollback), ChangeSetType.Rollback);
+                    Console.WriteLine($"Created Files:  {arquivoImplantacao} { arquivoRollback}");
+
+                    return new RetornoVM() { Retorno = true, CodErro = "", CreatedFiles = new[] { arquivoImplantacao, arquivoRollback } };
+                }
+
+                return new RetornoVM() { Retorno = false, CodErro = "CD002 - TIPO PLANILHA INVÁLIDO" };
             }
-
-            Console.WriteLine("Digite os changeSets que deseja aplicar no outros ambientes separando por vírgula e depois enter:");
-            var changesSetsInput = Console.ReadLine();
-            var list = changesSetsInput.Split(',').Select(_ => int.Parse(_.Trim())).OrderByDescending(_ => _).ToArray();
-            var result = new MergeBase() { MergeSheetList = ListFilesFromChangeSets(list) };
-
-            if (!result.MergeSheetList.Any())
+            catch (Exception ex)
             {
-                Console.WriteLine("Nenhum arquivo encontrado para os changeSets indicados");
-                return;
+                return new RetornoVM() { Retorno = false, CodErro = ex.Message, Exception = ex };
+                throw;
             }
+        }
 
 
-            Console.WriteLine("Starting.");
-            GetChangeSets(result);
 
+        private string GetFileName(ChangeSetType changeSetType)
+        {
+            var fileName = "";
+            if (changeSetType == ChangeSetType.Current)
+                fileName += "IMPLANTAÇÃO";
+            if (changeSetType == ChangeSetType.Rollback)
+                fileName += "ROLLBACK";
 
-            Console.WriteLine("Finishing.");
-            var folder = GetFolder();
-            var file = CreateFile(result, folder, "MergeFolder");
-            Console.WriteLine($"Created File:  {file}");
-            System.Diagnostics.Process.Start($@"{folder}\{file}");
+            fileName += "-" + _tipoBranch.ToString();
 
-            Console.ReadLine();
+            //   fileName += "-" + changesets.Replace(",","");
+
+            fileName += "-" + DateTime.Now.ToString("ddMMyy_HHmmss");
+
+            return fileName;
+        }
+
+        private void GetTfsUserByConfiguration()
+        {
+            _tfsUser = new TfsUser()
+            {
+                UserName = ConfigurationManager.AppSettings["User"],
+                UserPassword = ConfigurationManager.AppSettings["Password"],
+                Domain = ConfigurationManager.AppSettings["Domain"],
+                TfsUrl = ConfigurationManager.AppSettings["TfsUrl"],
+            };
         }
 
         private void GetChangeSets(MergeBase result)
         {
-            if (result.SourceControlEnvironment.Equals(SourceControlEnvironment.Homolog))
+            if (_tipoPlanilha == TipoPlanilha.Merge)
             {
-                GetChangeSetsByFile("HML", result, 1);
-                GetChangeSetsByFile("PRD", result, 0);
+                if (result.SourceControlEnvironment.Equals(SourceControlEnvironment.Homolog))
+                {
+                    GetChangeSetsByFile("HML", result, (int)ChangeSetType.Rollback);
+                    GetChangeSetsByFile("PRD", result, (int)ChangeSetType.Current);
+                }
+
+                if (result.SourceControlEnvironment.Equals(SourceControlEnvironment.EsteiraAgil))
+                {
+                    GetChangeSetsByFile("EsteiraAgil", result, (int)ChangeSetType.Rollback);
+                    GetChangeSetsByFile("HML", result, (int)ChangeSetType.Current);
+                    GetChangeSetsByFile("DEV", result, (int)ChangeSetType.Current);
+                }
+
+                if (result.SourceControlEnvironment.Equals(SourceControlEnvironment.Accenture))
+                {
+                    GetChangeSetsByFile("OutSource/Accenture", result, (int)ChangeSetType.Rollback);
+                    GetChangeSetsByFile("HML", result, (int)ChangeSetType.Current);
+                    GetChangeSetsByFile("DEV", result, (int)ChangeSetType.Current);
+                }
             }
 
-            if (result.SourceControlEnvironment.Equals(SourceControlEnvironment.EsteiraAgil))
+            if (_tipoPlanilha == TipoPlanilha.Rdm)
             {
-                GetChangeSetsByFile("EsteiraAgil", result, 1);
-                GetChangeSetsByFile("HML", result, 0);
-                GetChangeSetsByFile("DEV", result, 0);
-            }
-
-            if (result.SourceControlEnvironment.Equals(SourceControlEnvironment.Accenture))
-            {
-                GetChangeSetsByFile("OutSource/Accenture", result, 1);
-                GetChangeSetsByFile("HML", result, 0);
-                GetChangeSetsByFile("DEV", result, 0);
+                GetChangeSetsByFile(TipoBranch.HML.ToString(), result, (int)ChangeSetType.Current);
+                GetChangeSetsByFile(TipoBranch.HML.ToString(), result, (int)ChangeSetType.Rollback);
             }
 
             foreach (var item in result.MergeSheetList)
@@ -86,12 +173,12 @@ namespace TfsConnector.App.Service
             Console.WriteLine("Connecting on TFS Server...");
             try
             {
-                Uri serverUri = new Uri(TfsUser.TfsUrl);
-                NetworkCredential cred = new NetworkCredential(TfsUser.UserName, TfsUser.UserPassword, TfsUser.Domain);
+                Uri serverUri = new Uri(_tfsUser.TfsUrl);
+                NetworkCredential cred = new NetworkCredential(_tfsUser.UserName, _tfsUser.UserPassword, _tfsUser.Domain);
                 TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(serverUri, cred);
                 tpc.EnsureAuthenticated();
                 vcs = tpc.GetService<VersionControlServer>();
-                Console.WriteLine("Connected! Hello: " + vcs.AuthorizedUser);
+                Console.WriteLine("Connected! Hello: " + vcs.AuthenticatedUser);
                 return true;
             }
             catch (Exception ex)
@@ -116,8 +203,6 @@ namespace TfsConnector.App.Service
             return directory;
         }
 
-
-
         public List<MergeSheet> ListFilesFromChangeSets(int[] codes)
         {
             var result = new List<MergeSheet>();
@@ -128,7 +213,7 @@ namespace TfsConnector.App.Service
                 foreach (var item in changeset.Changes)
                 {
                     if (!result.Any(_ => _.PathTfs == item.Item.ServerItem))
-                        result.Add(new MergeSheet() { PathTfs = item.Item.ServerItem, TargetChangeSet = code.ToString(), PathTfsFull = item.Item.ServerItem });
+                        result.Add(new MergeSheet() { PathTfs = item.Item.ServerItem, TargetChangeSet = code.ToString(), PathTfsFull = item.Item.ServerItem, ObjectExtension = Path.GetExtension(item.Item.ServerItem) });
                 }
             }
             return result;
@@ -158,6 +243,8 @@ namespace TfsConnector.App.Service
                 {
                     Console.WriteLine($"Processing files: {item.PathTfsFull} index: {index}");
                     var pathTfsFull = mergeBase.ToPathTfsFull(item.PathTfsFull, environmentDestiny);
+                    var teste = "Outsource/Accenture";
+                    var nada = teste.Replace("Outsource/Accenture","1");
                     var changes = vcs.QueryHistory(pathTfsFull, RecursionType.Full);
                     var c = changes.ToList();
                     changeSet = c[index].ChangesetId.ToString();
@@ -266,7 +353,9 @@ namespace TfsConnector.App.Service
 
             using (MemoryStream stream = new MemoryStream())
             {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 ExcelPackage p = new ExcelPackage();
+
                 var ws = p.Workbook.Worksheets.Add("Merge");
                 ws.Column(1).Width = 120;
                 ws.Column(2).Width = 50;
@@ -407,5 +496,114 @@ namespace TfsConnector.App.Service
 
         }
 
+        private string CreateFileRdm(MergeBase mergeBase, string path, string fileName, ChangeSetType changeSetType)
+        {
+            FileInfo file1 = new FileInfo(@"model.xlsx");
+
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            using (ExcelPackage excelPackage = new ExcelPackage(file1))
+            {
+                ExcelWorkbook excelWorkBook = excelPackage.Workbook;
+
+                IEnumerable<MergeSheet> mergeBases;
+                ExcelWorksheet workSheet;
+
+                #region BANCO DE DADOS
+                var linha = START_LINE;
+                mergeBases = mergeBase.MergeSheetList.Where(_ => _BdExtensions.Contains(_.ObjectExtension));
+                workSheet = excelWorkBook.Worksheets[0];
+
+                foreach (var item in mergeBases)
+                {
+                    workSheet.Cells[linha, 1].Value = item.PathTfsFull;
+                    workSheet.Cells[linha, 2].Value = item.ObjectName;
+                    workSheet.Cells[linha, 3].Value = item.ObjectExtension;
+                    if (changeSetType == ChangeSetType.Rollback)
+                        workSheet.Cells[linha, 4].Style.Font.Color.SetColor(Color.OrangeRed);
+                    workSheet.Cells[linha, 4].Value = changeSetType == ChangeSetType.Current ? item.HMLBranchChangeSet : item.OutSourceBranchOldChangeSet;
+                    workSheet.Cells[linha, 5].Value = "";
+                    linha++;
+                }
+                #endregion
+
+                #region COMPONENTES
+                linha = START_LINE;
+                mergeBases = mergeBase.MergeSheetList.Where(_ => _ComponentsExtensions.Contains(_.ObjectExtension));
+                workSheet = excelWorkBook.Worksheets[1];
+                foreach (var item in mergeBases)
+                {
+                    workSheet.Cells[linha, 1].Value = item.PathTfsFull;
+                    workSheet.Cells[linha, 2].Value = item.ObjectName;
+                    workSheet.Cells[linha, 3].Value = item.ObjectExtension;
+                    if (changeSetType == ChangeSetType.Rollback)
+                        workSheet.Cells[linha, 4].Style.Font.Color.SetColor(Color.OrangeRed);
+                    workSheet.Cells[linha, 4].Value = changeSetType == ChangeSetType.Current ? item.HMLBranchChangeSet : item.OutSourceBranchOldChangeSet;
+                    workSheet.Cells[linha, 5].Value = "";
+                    workSheet.Cells[linha, 6].Value = "";
+                    linha++;
+                }
+                #endregion
+
+                #region PAGINAS
+                linha = START_LINE;
+                mergeBases = mergeBase.MergeSheetList.Where(_ => _PagesExtensions.Contains(_.ObjectExtension));
+                workSheet = excelWorkBook.Worksheets[2];
+                foreach (var item in mergeBases)
+                {
+                    workSheet.Cells[linha, 1].Value = item.PathTfsFull;
+                    workSheet.Cells[linha, 2].Value = item.ObjectName;
+                    workSheet.Cells[linha, 3].Value = item.ObjectExtension;
+                    if (changeSetType == ChangeSetType.Rollback)
+                        workSheet.Cells[linha, 4].Style.Font.Color.SetColor(Color.OrangeRed);
+                    workSheet.Cells[linha, 4].Value = changeSetType == ChangeSetType.Current ? item.HMLBranchChangeSet : item.OutSourceBranchOldChangeSet;
+                    workSheet.Cells[linha, 5].Value = "";
+                    workSheet.Cells[linha, 6].Value = "";
+                    linha++;
+                }
+                #endregion
+
+                #region IOTA
+                linha = START_LINE;
+                mergeBases = mergeBase.MergeSheetList.Where(_ => _IotaExtensions.Contains(_.ObjectExtension));
+                workSheet = excelWorkBook.Worksheets[3];
+                foreach (var item in mergeBases)
+                {
+                    workSheet.Cells[linha, 1].Value = item.PathTfsFull;
+                    workSheet.Cells[linha, 2].Value = item.ObjectName;
+                    workSheet.Cells[linha, 3].Value = item.ObjectExtension;
+
+                    if (changeSetType == ChangeSetType.Rollback)
+                        workSheet.Cells[linha, 4].Style.Font.Color.SetColor(Color.OrangeRed);
+
+                    workSheet.Cells[linha, 4].Value = changeSetType == ChangeSetType.Current ? item.HMLBranchChangeSet : item.OutSourceBranchOldChangeSet;
+                    workSheet.Cells[linha, 5].Value = @"\\iota\programas \\iota\programas64";
+                    workSheet.Cells[linha, 6].Value = "";
+                    linha++;
+                }
+                #endregion
+
+                #region SAVE FILE
+                var filename = $"{fileName}.xlsx";
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    excelPackage.SaveAs(stream);
+
+                    using (FileStream file = new FileStream(path + "/" + filename, FileMode.OpenOrCreate))
+                    {
+                        stream.Position = 0;
+                        stream.Read(stream.ToArray(), 0, (int)stream.Length);
+                        file.Write(stream.ToArray(), 0, stream.ToArray().Length);
+                        stream.Close();
+                        file.Flush();
+                        file.Close();
+                    }
+                }
+                #endregion
+
+                return filename;
+            }
+        }
     }
 }

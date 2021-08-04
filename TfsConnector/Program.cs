@@ -1,13 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Net;
-using OfficeOpenXml;
-using OfficeOpenXml.Style;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace BasicSccExample
 {
@@ -15,7 +6,19 @@ namespace BasicSccExample
     {
         static void Main(string[] args)
         {
-            new TfsConnector.App.Service.TfsServiceConnection().Run();
+            Console.WriteLine("Digite os changeSets que deseja aplicar no outros ambientes separando por vírgula e depois enter:");
+            var changesSetsInput = Console.ReadLine();
+            Console.WriteLine("Digite o tipo de Branch (0 - HML, 1 - PRD):");
+            var tipoBranch = int.Parse(Console.ReadLine());
+            Console.WriteLine("Digite o tipo de Branch (0 - Merge, 1 - RDM):");
+            var tipoPlanilha = int.Parse(Console.ReadLine());
+
+            var retorno = new TfsConnector.App.Service.TfsServiceConnection().Run(tipoPlanilha,tipoBranch,changesSetsInput);
+
+            if (retorno.Retorno)
+            {
+                Console.ReadLine();
+            }
         }
     }
 }
