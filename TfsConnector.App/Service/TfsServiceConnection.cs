@@ -292,14 +292,11 @@ namespace TfsConnector.App.Service
                 ws.Cells[1, 1].Style.Font.UnderLine = true;
                 ws.Cells[3, 1, 3, 6].Style.Font.Bold = true;
                 ws.Cells[4, 3, 4, 6].Style.Font.Bold = true;
-
                 ws.Cells[1, 1].Style.Font.Color.SetColor(Color.Black);
                 ws.Cells[3, 1, 3, 6].Style.Font.Color.SetColor(Color.White);
                 ws.Cells[4, 3, 4, 6].Style.Font.Color.SetColor(Color.White);
-
                 ws.Cells[3, 1, 3, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
                 ws.Cells[4, 3, 4, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
-
                 ws.Cells[3, 1, 3, 6].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(247, 150, 70));
                 ws.Cells[4, 3, 4, 6].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(247, 150, 70));
 
@@ -311,12 +308,10 @@ namespace TfsConnector.App.Service
                     ws.Cells[line, 1, line, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
                     ws.Cells[line, 1, line, 6].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(251, 212, 180));
                     ws.Cells[line, 1, line, 6].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-
                     ws.Cells[line, 1, line, 6].Style.Border.BorderAround(ExcelBorderStyle.Thin);
                     ws.Cells[line, 1, line, 6].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                     ws.Cells[line, 1, line, 6].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-
-                    ws.Cells[line, 3, line, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    ws.Cells[line, 3, line, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
                     ws.Cells[line, 1].Value = item.PathTfs;
                     ws.Cells[line, 2].Value = item.ObjectName;
@@ -330,11 +325,10 @@ namespace TfsConnector.App.Service
 
                 line += 3;
 
-                ws.Cells[line + 3, 1, line + 4, 5].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                ws.Cells[line + 3, 1, line + 4, 5].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(247, 150, 70));
+                ws.Cells[line + 3, 1, line + 4, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                ws.Cells[line + 3, 1, line + 4, 6].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(247, 150, 70));
                 ws.Cells[line, 1].Style.Font.Color.SetColor(Color.Black);
-                ws.Cells[line + 3, 1, line + 4, 5].Style.Font.Color.SetColor(Color.White);
-
+                ws.Cells[line + 3, 1, line + 4, 6].Style.Font.Color.SetColor(Color.White);
                 ws.Cells[line, 1].Value = "Implantação:";
                 ws.Cells[line, 1].Style.Font.Bold = true;
                 ws.Cells[line, 1].Style.Font.UnderLine = true;
@@ -342,26 +336,25 @@ namespace TfsConnector.App.Service
                 ws.Cells[line + 3, 1].Value = "Caminho TFS – Branch";
                 ws.Cells[line + 3, 1, line + 4, 1].Merge = true;
                 ws.Cells[line + 3, 1, line + 4, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                ws.Cells[line + 3, 1, line + 4, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                ws.Cells[line + 3, 1, line + 4, 5].Style.Font.Bold = true;
+                ws.Cells[line + 3, 1, line + 4, 6].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                ws.Cells[line + 3, 1, line + 4, 6].Style.Font.Bold = true;
 
                 ws.Cells[line + 3, 2].Value = "Objeto";
                 ws.Cells[line + 3, 2, line + 4, 2].Merge = true;
                 ws.Cells[line + 3, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
 
-                ws.Cells[line + 3, 3, line + 3, 5].Value = "ChangeSet";
+                ws.Cells[line + 3, 3, line + 3, 6].Value = "ChangeSet";
                 ws.Cells[line + 4, 3].Value = mergeBase.SourceControlEnvironment.Equals(SourceControlEnvironment.Homolog) ? "HML" : "Esteira"; ;
                 ws.Cells[line + 4, 4].Value = "DEV";
                 ws.Cells[line + 4, 5].Value = "HML";
-                ws.Cells[line + 4, 5].Value = "PRD";
+                ws.Cells[line + 4, 6].Value = "PRD";
+                                
                 ws.Cells[line + 3, 3, line + 4, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-
                 ws.Cells[line + 3, 1, line + 4, 6].Style.Border.BorderAround(ExcelBorderStyle.Thin, Color: Color.White);
                 ws.Cells[line + 3, 1, line + 4, 6].Style.Border.Right.Style = ExcelBorderStyle.Thin;
                 ws.Cells[line + 3, 1, line + 4, 6].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 ws.Cells[line + 3, 1, line + 4, 6].Style.Border.Left.Color.SetColor(Color.White);
                 ws.Cells[line + 3, 1, line + 4, 6].Style.Border.Right.Color.SetColor(Color.White);
-
                 ws.Cells[line + 3, 1, line + 4, 6].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
                 ws.Cells[line + 3, 1, line + 4, 6].Style.Border.Bottom.Color.SetColor(Color.White);
 
