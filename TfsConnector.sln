@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.31229.75
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsConnector", "TfsConnector\TfsConnector.csproj", "{442DD2C3-7ADD-4D8C-91F1-D726491623F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsConnector.App", "TfsConnector.App\TfsConnector.App.csproj", "{915D56B3-1DA9-4063-9267-B60995EB5FF4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TfsConnector.Ui", "TfsConnector.UI\TfsConnector.Ui.csproj", "{475AAD0E-71C0-4CB8-AE35-BAED8AF4BFC3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{442DD2C3-7ADD-4D8C-91F1-D726491623F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{442DD2C3-7ADD-4D8C-91F1-D726491623F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{442DD2C3-7ADD-4D8C-91F1-D726491623F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{915D56B3-1DA9-4063-9267-B60995EB5FF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{915D56B3-1DA9-4063-9267-B60995EB5FF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{915D56B3-1DA9-4063-9267-B60995EB5FF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{915D56B3-1DA9-4063-9267-B60995EB5FF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{475AAD0E-71C0-4CB8-AE35-BAED8AF4BFC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{475AAD0E-71C0-4CB8-AE35-BAED8AF4BFC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{475AAD0E-71C0-4CB8-AE35-BAED8AF4BFC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{475AAD0E-71C0-4CB8-AE35-BAED8AF4BFC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
