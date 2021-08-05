@@ -32,9 +32,6 @@ namespace TfsConnector
             this.components = new System.ComponentModel.Container();
             this.labChangeset = new System.Windows.Forms.Label();
             this.txtChangesets = new System.Windows.Forms.TextBox();
-            this.grpBranch = new System.Windows.Forms.GroupBox();
-            this.rbPrd = new System.Windows.Forms.RadioButton();
-            this.rbHml = new System.Windows.Forms.RadioButton();
             this.groupTabs = new System.Windows.Forms.TabControl();
             this.tabPrincipal = new System.Windows.Forms.TabPage();
             this.btnAbrirPasta = new System.Windows.Forms.Button();
@@ -65,7 +62,9 @@ namespace TfsConnector
             this.fbDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.grpBranch.SuspendLayout();
+            this.rbHml = new System.Windows.Forms.RadioButton();
+            this.rbPrd = new System.Windows.Forms.RadioButton();
+            this.grpBranch = new System.Windows.Forms.GroupBox();
             this.groupTabs.SuspendLayout();
             this.tabPrincipal.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -73,6 +72,7 @@ namespace TfsConnector
             this.groupBox1.SuspendLayout();
             this.tabConfig.SuspendLayout();
             this.grpConection.SuspendLayout();
+            this.grpBranch.SuspendLayout();
             this.SuspendLayout();
             // 
             // labChangeset
@@ -92,47 +92,6 @@ namespace TfsConnector
             this.txtChangesets.Name = "txtChangesets";
             this.txtChangesets.Size = new System.Drawing.Size(375, 20);
             this.txtChangesets.TabIndex = 1;
-            // 
-            // grpBranch
-            // 
-            this.grpBranch.Controls.Add(this.rbPrd);
-            this.grpBranch.Controls.Add(this.rbHml);
-            this.grpBranch.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.grpBranch.Location = new System.Drawing.Point(6, 19);
-            this.grpBranch.Name = "grpBranch";
-            this.grpBranch.Size = new System.Drawing.Size(127, 50);
-            this.grpBranch.TabIndex = 2;
-            this.grpBranch.TabStop = false;
-            this.grpBranch.Text = "Branch";
-            // 
-            // rbPrd
-            // 
-            this.rbPrd.AllowDrop = true;
-            this.rbPrd.AutoSize = true;
-            this.rbPrd.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.rbPrd.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rbPrd.Location = new System.Drawing.Point(73, 21);
-            this.rbPrd.Name = "rbPrd";
-            this.rbPrd.Size = new System.Drawing.Size(48, 17);
-            this.rbPrd.TabIndex = 5;
-            this.rbPrd.Text = "PRD";
-            this.rbPrd.UseVisualStyleBackColor = true;
-            this.rbPrd.CheckedChanged += new System.EventHandler(this.rbPrd_CheckedChanged);
-            // 
-            // rbHml
-            // 
-            this.rbHml.AllowDrop = true;
-            this.rbHml.AutoSize = true;
-            this.rbHml.Checked = true;
-            this.rbHml.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.rbHml.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.rbHml.Location = new System.Drawing.Point(6, 21);
-            this.rbHml.Name = "rbHml";
-            this.rbHml.Size = new System.Drawing.Size(48, 17);
-            this.rbHml.TabIndex = 5;
-            this.rbHml.TabStop = true;
-            this.rbHml.Text = "HML";
-            this.rbHml.UseVisualStyleBackColor = true;
             // 
             // groupTabs
             // 
@@ -446,6 +405,47 @@ namespace TfsConnector
             // 
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             // 
+            // rbHml
+            // 
+            this.rbHml.AllowDrop = true;
+            this.rbHml.AutoSize = true;
+            this.rbHml.Checked = true;
+            this.rbHml.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.rbHml.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.rbHml.Location = new System.Drawing.Point(6, 21);
+            this.rbHml.Name = "rbHml";
+            this.rbHml.Size = new System.Drawing.Size(48, 17);
+            this.rbHml.TabIndex = 5;
+            this.rbHml.TabStop = true;
+            this.rbHml.Text = "HML";
+            this.rbHml.UseVisualStyleBackColor = true;
+            // 
+            // rbPrd
+            // 
+            this.rbPrd.AllowDrop = true;
+            this.rbPrd.AutoSize = true;
+            this.rbPrd.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.rbPrd.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rbPrd.Location = new System.Drawing.Point(73, 21);
+            this.rbPrd.Name = "rbPrd";
+            this.rbPrd.Size = new System.Drawing.Size(48, 17);
+            this.rbPrd.TabIndex = 5;
+            this.rbPrd.Text = "PRD";
+            this.rbPrd.UseVisualStyleBackColor = true;
+            this.rbPrd.CheckedChanged += new System.EventHandler(this.rbPrd_CheckedChanged);
+            // 
+            // grpBranch
+            // 
+            this.grpBranch.Controls.Add(this.rbPrd);
+            this.grpBranch.Controls.Add(this.rbHml);
+            this.grpBranch.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.grpBranch.Location = new System.Drawing.Point(6, 19);
+            this.grpBranch.Name = "grpBranch";
+            this.grpBranch.Size = new System.Drawing.Size(127, 50);
+            this.grpBranch.TabIndex = 2;
+            this.grpBranch.TabStop = false;
+            this.grpBranch.Text = "Branch";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -460,8 +460,6 @@ namespace TfsConnector
             this.Text = "TfsConnector";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Shown += new System.EventHandler(this.Form1_Shown);
-            this.grpBranch.ResumeLayout(false);
-            this.grpBranch.PerformLayout();
             this.groupTabs.ResumeLayout(false);
             this.tabPrincipal.ResumeLayout(false);
             this.tabPrincipal.PerformLayout();
@@ -473,6 +471,8 @@ namespace TfsConnector
             this.tabConfig.ResumeLayout(false);
             this.grpConection.ResumeLayout(false);
             this.grpConection.PerformLayout();
+            this.grpBranch.ResumeLayout(false);
+            this.grpBranch.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -481,9 +481,6 @@ namespace TfsConnector
 
         private System.Windows.Forms.Label labChangeset;
         private System.Windows.Forms.TextBox txtChangesets;
-        private System.Windows.Forms.GroupBox grpBranch;
-        private System.Windows.Forms.RadioButton rbPrd;
-        private System.Windows.Forms.RadioButton rbHml;
         private System.Windows.Forms.TabControl groupTabs;
         private System.Windows.Forms.TabPage tabPrincipal;
         private System.Windows.Forms.TabPage tabConfig;
@@ -514,6 +511,9 @@ namespace TfsConnector
         private System.Windows.Forms.ComboBox cbHttp;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.GroupBox grpBranch;
+        private System.Windows.Forms.RadioButton rbPrd;
+        private System.Windows.Forms.RadioButton rbHml;
     }
 }
 

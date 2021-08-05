@@ -46,7 +46,9 @@ namespace TfsConnector.App.Service
 
                 if (_tipoPlanilha == TipoPlanilha.Rdm)
                 {
-                    FileInfo file1 = new FileInfo(@"model.xlsx");
+                    var directory = Directory.GetCurrentDirectory();
+                    directory = Path.Combine(directory, "FileModel");
+                    var file1 = new FileInfo(Path.Combine(directory, "model.xlsx"));
                     if (!file1.Exists)
                         throw new Exception("Planilha modelo não encontrada!");
                 }
@@ -244,7 +246,7 @@ namespace TfsConnector.App.Service
                     Console.WriteLine($"Processing files: {item.PathTfsFull} index: {index}");
                     var pathTfsFull = mergeBase.ToPathTfsFull(item.PathTfsFull, environmentDestiny);
                     var teste = "Outsource/Accenture";
-                    var nada = teste.Replace("Outsource/Accenture","1");
+                    var nada = teste.Replace("Outsource/Accenture", "1");
                     var changes = vcs.QueryHistory(pathTfsFull, RecursionType.Full);
                     var c = changes.ToList();
                     changeSet = c[index].ChangesetId.ToString();
@@ -437,7 +439,7 @@ namespace TfsConnector.App.Service
                 ws.Cells[line + 4, 4].Value = "DEV";
                 ws.Cells[line + 4, 5].Value = "HML";
                 ws.Cells[line + 4, 6].Value = "PRD";
-                                
+
                 ws.Cells[line + 3, 3, line + 4, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 ws.Cells[line + 3, 1, line + 4, 6].Style.Border.BorderAround(ExcelBorderStyle.Thin, Color: Color.White);
                 ws.Cells[line + 3, 1, line + 4, 6].Style.Border.Right.Style = ExcelBorderStyle.Thin;
@@ -498,22 +500,22 @@ namespace TfsConnector.App.Service
 
         private string CreateFileRdm(MergeBase mergeBase, string path, string fileName, ChangeSetType changeSetType)
         {
-            FileInfo file1 = new FileInfo(@"model.xlsx");
+            var directory = Directory.GetCurrentDirectory();
+            directory = Path.Combine(directory, "FileModel");
+            var file1 = new FileInfo(Path.Combine(directory, "model.xlsx"));
 
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             using (ExcelPackage excelPackage = new ExcelPackage(file1))
             {
                 ExcelWorkbook excelWorkBook = excelPackage.Workbook;
-
-                IEnumerable<MergeSheet> mergeBases;
                 ExcelWorksheet workSheet;
 
                 #region BANCO DE DADOS
                 var linha = START_LINE;
-                mergeBases = mergeBase.MergeSheetList.Where(_ => _BdExtensions.Contains(_.ObjectExtension));
+                //mergeBases = mergeBase.MergeSheetList;
                 workSheet = excelWorkBook.Worksheets[0];
 
-                foreach (var item in mergeBases)
+                foreach (var item in mergeBase.MergeSheetList.Where(_ => _BdExtensions.Contains(_.ObjectExtension)))
                 {
                     workSheet.Cells[linha, 1].Value = item.PathTfsFull;
                     workSheet.Cells[linha, 2].Value = item.ObjectName;
@@ -527,10 +529,9 @@ namespace TfsConnector.App.Service
                 #endregion
 
                 #region COMPONENTES
-                linha = START_LINE;
-                mergeBases = mergeBase.MergeSheetList.Where(_ => _ComponentsExtensions.Contains(_.ObjectExtension));
+                linha = START_LINE;                
                 workSheet = excelWorkBook.Worksheets[1];
-                foreach (var item in mergeBases)
+                foreach (var item in mergeBase.MergeSheetList)
                 {
                     workSheet.Cells[linha, 1].Value = item.PathTfsFull;
                     workSheet.Cells[linha, 2].Value = item.ObjectName;
@@ -545,10 +546,9 @@ namespace TfsConnector.App.Service
                 #endregion
 
                 #region PAGINAS
-                linha = START_LINE;
-                mergeBases = mergeBase.MergeSheetList.Where(_ => _PagesExtensions.Contains(_.ObjectExtension));
+                linha = START_LINE;               
                 workSheet = excelWorkBook.Worksheets[2];
-                foreach (var item in mergeBases)
+                foreach (var item in mergeBase.MergeSheetList)
                 {
                     workSheet.Cells[linha, 1].Value = item.PathTfsFull;
                     workSheet.Cells[linha, 2].Value = item.ObjectName;
@@ -564,9 +564,9 @@ namespace TfsConnector.App.Service
 
                 #region IOTA
                 linha = START_LINE;
-                mergeBases = mergeBase.MergeSheetList.Where(_ => _IotaExtensions.Contains(_.ObjectExtension));
+                
                 workSheet = excelWorkBook.Worksheets[3];
-                foreach (var item in mergeBases)
+                foreach (var item in mergeBase.MergeSheetList)
                 {
                     workSheet.Cells[linha, 1].Value = item.PathTfsFull;
                     workSheet.Cells[linha, 2].Value = item.ObjectName;
