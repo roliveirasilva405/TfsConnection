@@ -244,12 +244,10 @@ namespace TfsConnector.App.Service
                 try
                 {
                     Console.WriteLine($"Processing files: {item.PathTfsFull} index: {index}");
-                    var pathTfsFull = mergeBase.ToPathTfsFull(item.PathTfsFull, environmentDestiny);
-                    var teste = "Outsource/Accenture";
-                    var nada = teste.Replace("Outsource/Accenture", "1");
+                    var pathTfsFull = mergeBase.ToPathTfsFull(item.PathTfsFull, environmentDestiny);                   
                     var changes = vcs.QueryHistory(pathTfsFull, RecursionType.Full);
-                    var c = changes.ToList();
-                    changeSet = c[index].ChangesetId.ToString();
+                    var changesList = changes.ToList();
+                    changeSet = changesList[index].ChangesetId.ToString();
                     hash = GetHashFromFile(pathTfsFull, changeSet);
                 }
                 catch (Exception ex)

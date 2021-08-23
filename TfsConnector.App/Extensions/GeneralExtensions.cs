@@ -18,7 +18,7 @@ namespace TfsConnector.App.Extensions
 
         public static string ToPathTfsFull(this MergeBase mergeBase, string currentFile, string environmentDestiny)
         {
-            var pathReturn = "";
+            var pathReturn = string.Empty;
             if (mergeBase.SourceControlEnvironment.Equals(SourceControlEnvironment.Homolog))
             {
                 pathReturn = currentFile.Replace("HML", environmentDestiny);
@@ -28,6 +28,7 @@ namespace TfsConnector.App.Extensions
             if (mergeBase.SourceControlEnvironment.Equals(SourceControlEnvironment.Accenture))
             {
                 pathReturn = currentFile.Replace("Outsource/Accenture", environmentDestiny);
+                pathReturn = pathReturn.Replace("OutSource/Accenture", environmentDestiny);
                 return pathReturn;
             }
 
